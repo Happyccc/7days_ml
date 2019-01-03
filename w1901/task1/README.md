@@ -14,6 +14,7 @@
   
 - 预测predict和predict_proba
   - predict_proba预测类别的概率值,如果是2分类一般取概率值的第二列（class=1）
+  - 有些model如SVC要在参数中申明才能使用predict_proba，如SVC中要加入probability=True参数
   - 有些model没有predict_proba属性，这时候使用决策函数
 ```python
 if hasattr(clf, "predict_proba"):
@@ -24,4 +25,9 @@ else:  # use decision function
         (prob_pos - prob_pos.min()) / (prob_pos.max() - prob_pos.min())
 ```
 
-- 
+- 模型评估sklearn.metrics
+  - [sklearn模型评估地址](https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics)
+  - metrics.accuracy_score(y_test,y_pred) 准确度
+  - metrics.f1_score(y_test,y_pred,average='weighted') F1-score
+  - fpr,tpr,thresholds = metrics.roc_curve(y_test,y_proba[:,1]) ROC曲线
+  - auc = metrics.roc(fpr,tpr) AUC值
