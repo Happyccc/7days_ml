@@ -76,4 +76,5 @@
     - min_split_gain：最小分割增益，默认为0
     - min_child_weight：叶子节点的最小权重和，默认1e-3
     - min_child_samples：叶子节点最小样本数，默认为20
+    - importance_type：特征重要度类型，'split'表示特征被划分次数，'gain'代表特征划分增益，默认为'split'
     
