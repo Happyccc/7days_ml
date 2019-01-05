@@ -1,6 +1,6 @@
 ### Task1.2 集成模型构建
 
-任务说明：将金融数据集三七分，随机种子2018，调用sklearn包，简单构建逻辑回归、SVM和决策树3个模型并对每一个模型进行评分，评分方式任意，例如准确度和auc值。（在任务1中不需要考虑数据预处理和模型调参）
+构建随机森林、GBDT、XGBoost和LightGBM这4个模型，并对每一个模型进行评分，评分方式任意，例如准确度和auc值。
 
 [文档地址](https://shimo.im/docs/jse5ZZhdvEQR4siC)
 
@@ -51,7 +51,29 @@
 
 - xgboost包xgboost.XGBClassifier
   - [地址](https://xgboost.readthedocs.io/en/latest/python/python_api.html)
-  - metrics.accuracy_score(y_test,y_pred) 准确度
-  - metrics.f1_score(y_test,y_pred,average='weighted') F1-score
-  - fpr,tpr,thresholds = metrics.roc_curve(y_test,y_proba[:,1]) ROC曲线
-  - auc = metrics.roc(fpr,tpr) AUC值
+  - XGBClassifier(max_depth=3, learning_rate=0.1, n_estimators=100, silent=True, objective='binary:logistic',
+                   booster='gbtree', n_jobs=1, nthread=None, gamma=0, min_child_weight=1, max_delta_step=0,
+                   subsample=1, colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
+                   scale_pos_weight=1, base_score=0.5, random_state=0, seed=None, missing=None)
+  - 参数说明：
+    - booster：使用的基学习器，gbtree, gblinear or dart
+    - gamma：惩罚项系数，指定节点分裂所需的最小损失函数下降值，默认0
+    - min_child_weight：子节点中最小的样本权重和，默认为1
+    - colsample_bytree：特征采样比例
+    - colsample_bylevel：对于每个划分在每个水平上的样本采样的比例
+    - scale_pos_weight：正样本权重，用于样本平衡
+    - importance_type：特征重要性类型，默认为gain，有“gain”, “weight”, “cover”, “total_gain” or “total_cover”
+
+- lgbm包lightgbm.LGBMClassifier
+  - [地址](https://lightgbm.readthedocs.io/en/latest/Python-API.html)
+  - lightgbm.LGBMClassifier(boosting_type='gbdt', num_leaves=31, max_depth=-1, learning_rate=0.1, n_estimators=100,
+                             subsample_for_bin=200000, objective=None, class_weight=None, min_split_gain=0.0,
+                             min_child_weight=0.001, min_child_samples=20, subsample=1.0, subsample_freq=0,
+                             colsample_bytree=1.0, reg_alpha=0.0, reg_lambda=0.0, random_state=None, n_jobs=-1,
+                             silent=True, importance_type='split')
+  - 参数说明：
+    - objective：目标函数，有‘regression’‘binary’‘multiclass’'lambdarank’
+    - min_split_gain：最小分割增益，默认为0
+    - min_child_weight：叶子节点的最小权重和，默认1e-3
+    - min_child_samples：叶子节点最小样本数，默认为20
+    
