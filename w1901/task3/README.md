@@ -4,7 +4,9 @@
 
 [文档地址](https://shimo.im/docs/NTt9uqcuPhETs6w6)
 
-#### sklearn评估包学习
+#### 结果分析
 
-- 随机森林sklearn.metrics
-  - [sklearn地址](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
+- 测试集上ensemble模型表现得更好，其中XGB的准确率和AUC都为最高；
+- 非ensemble模型在没有做特征工程和数据预处理时表现很差；
+- SVM的运行时间一般较长，这是制约其在比赛中大量使用的重要原因；
+- 由于时间关系，下次对模型进行简单预处理后分析其效果。
