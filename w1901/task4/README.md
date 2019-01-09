@@ -12,8 +12,8 @@
 |LR|test|0.701|0.408|0.655|0.718|0.752|
 |SVM|train|0.762|0.518|0.719|0.773|0.821|
 |SVM|test|0.699|0.434|0.646|0.715|0.751|
-|CART|train|1.0|1.0|1.0|1.0|1.0|
-|CART|test|0.685|0.371|0.362|0.684|0.578|
+|DT|train|1.0|1.0|1.0|1.0|1.0|
+|DT|test|0.685|0.371|0.362|0.684|0.578|
 |RF|train|0.813|0.606|0.731|0.819|0.875|
 |RF|test|0.751|0.504|0.588|0.757|0.770|
 |GBDT|train|0.835|0.837|0.426|0.815|0.880|
@@ -22,6 +22,21 @@
 |XGB|test|0.789|0.663|0.329|0.762|0.769|
 |LGBM|train|0.789|0.557|0.779|0.799|0.872|
 |LGBM|test|0.724|0.464|0.630|0.736|0.769|
+
+- 经过标准化后LR、SVM在测试集上的AUC相比标准化前提升了10+pp，而ensemble模型和决策树的变化不大
+- XGB在除召回率外的各项指标上均为最优，LightGBM的AUC也是最优，且召回相当好，ensemble模型的效果显著好于其他模型
+- 决策树和随机森林&GBDT的max_features不同，后两者取平方根特征值时效果最好，且评价划分标准也不同，各ensemble模型的最优树的个数也不同，可见超参数调优的必要性
+
+|模型|最优参数|
+| - | :-: |
+|LR |{'C': 1, 'solver': 'newton-cg'}|
+|SVM|{'kernel': 'linear', 'C': 0.5}|
+|DT|{'max_features': None, 'criterion': 'entropy'}|
+|RF|{'max_features': 'auto', 'n_estimators': 90, 'criterion': 'gini', 'max_depth': 5}|
+|GBDT|{'max_features': 'auto', 'n_estimators': 50, 'learning_rate': 0.1, 'max_depth': 3}|
+|XGB|{'n_estimators': 50, 'learning_rate': 0.1, 'max_depth': 3}|
+|LightGBM|{'n_estimators': 40, 'learning_rate': 0.1, 'max_depth': 3}|
+
 
 #### sklearn包学习
 
