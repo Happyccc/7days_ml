@@ -27,6 +27,7 @@
 - XGB在除召回率外的各项指标上均为最优，LightGBM的AUC也是最优，且召回相当好，ensemble模型的效果显著好于其他模型
 - 决策树和随机森林&GBDT的max_features不同，后两者取平方根特征值时效果最好，且评价划分标准也不同，各ensemble模型的最优树的个数也不同，可见超参数调优的必要性
 
+
 |模型|最优参数|
 | - | :-: |
 |LR |{'C': 1, 'solver': 'newton-cg'}|
@@ -36,6 +37,7 @@
 |GBDT|{'max_features': 'auto', 'n_estimators': 50, 'learning_rate': 0.1, 'max_depth': 3}|
 |XGB|{'n_estimators': 50, 'learning_rate': 0.1, 'max_depth': 3}|
 |LightGBM|{'n_estimators': 40, 'learning_rate': 0.1, 'max_depth': 3}|
+
 
 
 #### sklearn包学习
