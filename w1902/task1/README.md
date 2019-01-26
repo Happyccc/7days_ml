@@ -17,3 +17,9 @@
   
 - data.nunique()查看数据框的重复值
 - pd.set_option('display.max_columns', None)用于展示全部列
+
+- 数据类型转换三种方法
+  - 使用astype()函数进行强制类型转换
+  - 自定义函数进行数据类型转换
+  - 使用Pandas提供的函数如to_numeric()、to_datetime()
+  - [参考文档](https://segmentfault.com/a/1190000014713098)
