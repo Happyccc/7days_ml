@@ -1,0 +1,33 @@
+### 生存分析
+library(survival)
+library(survminer)
+library(dplyr)
+
+##常用函数
+Surv():创建生存对象
+survfit():使用公式或已构建的Cox模型拟合生存曲线
+coxph():拟合Cox比例风险回归模型
+cox.zph():检验一个Cox回归模型的比例风险假设
+survdiff():用log-rank/Mantel-Haenszel检验生存差异
+
+## 案例
+s <- Surv(time = lung$time, event = lung$status)
+sfit <- survfit(s~1)
+sfit <- survfit(Surv(time, status)~1, data = lung)
+summary(sfit)
+
+sfit <- survfit(Surv(time,status) ~ sex, data = lung)
+summary(sfit, times = seq(0,1000,100)) 
+
+# Kaplan-Meier生存曲线
+ggsurvplot(sfit)
+ggsurvplot(sfit, conf.int = TRUE, pval = TRUE, risk.table = TRUE, risk.table.height = .2,
+           legend.title = "Sex", legend.labs = c("Male","Female"), palette = c("dodgerblue2","orchid2"),
+           title = "Kaplan-Meier Curve for Lung Cancer Survival") #这里的p-value是对数秩检验的p值
+
+# Cox回归模型——判断影响生存的因子
+fit <- coxph(Surv(time,status) ~ sex, data = lung)
+summary(fit) # exp(coef)就是风险比HR，>1 风险增加
+
+# 总结
+1、Cox回归和来自survdiff的logrank检验将在大多数时间给你类似的结果。对数秩检验询问两组人群生存曲线是否显著不同
