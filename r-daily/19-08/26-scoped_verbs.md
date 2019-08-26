@@ -97,6 +97,12 @@ df %>% summarise_at(vars(-z), funs(min,max))
 df %>% rename_all(~gsub("_", ".", .x))
 ```
 
+- filter_all
+```r
+library(nycflights13)
+weather %>% filter_all(any_vars(is.na(.)))
+```
+
 - mutate_all
 ```r
 ## 将所有元素*25，再四舍五入
