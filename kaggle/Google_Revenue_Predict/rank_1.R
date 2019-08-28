@@ -1,4 +1,7 @@
-###Loading required libraries
+# https://www.kaggle.com/kostoglot/winning-solution#L144
+
+### Loading required libraries
+
 library(plyr)
 library(tidyverse)
 library(jsonlite)
@@ -8,7 +11,8 @@ library(lubridate)
 library(lightgbm)
 library(foreach)
 
-###Defining types of extracted attributes
+
+### Defining types of extracted attributes
 ctypes <- cols(fullVisitorId = col_character(),
                channelGrouping = col_character(),
                date = col_datetime(),
@@ -23,12 +27,12 @@ ctypes <- cols(fullVisitorId = col_character(),
                hits = col_skip(),
                customDimensions = col_skip())
 
-###Data extraction
+### Data extraction
 message("Data Extraction")
 tr0 <- read_csv("../input/train_v2.csv", col_types = ctypes)
 te0 <- read_csv("../input/test_v2.csv", col_types = ctypes)
 
-###Data parsing
+### Data parsing
 flatten_json <- . %>% 
   str_c(., collapse = ",") %>% 
   str_c("[", ., "]") %>% 
@@ -45,23 +49,23 @@ message("Data Parsing")
 tr <- parse(tr0)
 te <- parse(te0)
 
-###Defining useful columns
+### Defining useful columns
 good_cols = c("channelGrouping","date","fullVisitorId","visitId","visitNumber","visitStartTime","browser","deviceCategory",
               "isMobile","operatingSystem","city","continent","country","metro","networkDomain","region","subContinent","bounces",                              
               "hits","newVisits","pageviews","sessionQualityDim","timeOnSite","totalTransactionRevenue","transactionRevenue",
               "transactions","adContent","adwordsClickInfo.adNetworkType", "adwordsClickInfo.gclId","adwordsClickInfo.isVideoAd",
               "adwordsClickInfo.page", "adwordsClickInfo.slot","campaign","isTrueDirect","keyword","medium","referralPath","source")
 
-###Combining tables and convertion to dataframe
+### Combining tables and convertion to dataframe
 tr = rbind(tr[c(good_cols)], te[c(good_cols)])
 tr = as.data.frame(tr)
 
-###date as ymd-date, part of columns as integers
+### date as ymd-date, part of columns as integers
 tr$date = ymd(tr$date)
 for (i in c(18:26,31))
   tr[,i] = as.integer(tr[,i])
 
-###if transactionRevenue is NA, it means 0
+### if transactionRevenue is NA, it means 0
 tr$transactionRevenue = ifelse(is.na(tr$transactionRevenue) == TRUE, 0, tr$transactionRevenue)
 
 ###function includes getting:
@@ -129,7 +133,7 @@ getTimeFramewithFeatures <- function(data, k)
   return(tf)
 }
 
-###Getting parts of train-set 
+### Getting parts of train-set 
 message("Get 1st train part")
 tr1 = getTimeFramewithFeatures(tr, 1)
 message("Get 2nd train part")
@@ -139,7 +143,7 @@ tr3 = getTimeFramewithFeatures(tr, 3)
 message("Get 4th train part")
 tr4 = getTimeFramewithFeatures(tr, 4)
 
-###Costruction of the test-set (by analogy as train-set) 
+### Costruction of the test-set (by analogy as train-set) 
 message("Get test")
 tr5 = tr[tr$date >=  '2018-05-01',]
 tr5_maxdate = max(tr5$date)
@@ -189,7 +193,7 @@ tr5 <- tr5 %>%
 tr5$target = NA
 tr5$ret = NA
 
-###Combining all pieces and converting the types
+### Combining all pieces and converting the types
 train_all = rbind(tr1,tr2,tr3,tr4,tr5)
 train_all$interval_dates = as.integer(train_all$interval_dates)
 train_all$last_ses_from_the_period_end = as.integer(train_all$last_ses_from_the_period_end)
@@ -198,11 +202,11 @@ for (i in c(2,8:19))
   train_all[,i] = as.numeric(as.factor(train_all[,i]))
 train_all[1:10,]
 
-###Filtering train and test from combined dataframe
+### Filtering train and test from combined dataframe
 train = train_all[is.na(train_all$target) == FALSE,]
 test =  train_all[is.na(train_all$target) == TRUE,]
 
-###Parameters of "isReturned" classificator 
+### Parameters of "isReturned" classificator 
 param_lgb2 = list(objective = "binary",
                   max_bin = 256,
                   learning_rate = 0.01,
@@ -213,7 +217,7 @@ param_lgb2 = list(objective = "binary",
                   bagging_freq = 1,
                   metric = "binary_logloss")
 
-###Parameters of "How_Much_Returned_Will_Pay" regressor
+### Parameters of "How_Much_Returned_Will_Pay" regressor
 param_lgb3= list(objective = "regression",
                  max_bin = 256,
                  learning_rate = 0.01,
@@ -224,7 +228,7 @@ param_lgb3= list(objective = "regression",
                  bagging_freq = 1,
                  metric = "rmse")
 
-###Training and prediction of models: Averaging of 10 [Classificator*Regressor] values
+### Training and prediction of models: Averaging of 10 [Classificator*Regressor] values
 dtrain_all <- lgb.Dataset(as.matrix(train[-c(1,39,40)]),label = train$ret)
 dtrain_ret <- lgb.Dataset(as.matrix(train[-c(1,39,40)][train$ret == 1,]),label = train[train$ret == 1,]$target)
 pr_lgb_sum = 0
@@ -239,7 +243,7 @@ for (i in c(1:10)) {
 }
 pr_final2 = pr_lgb_sum/10
 
-###Writing final predictions into csv
+### Writing final predictions into csv
 summary(pr_final2)
 newsub4 = data.frame(fullVisitorId = test$fullVisitorId, PredictedLogRevenue = pr_final2)
 write.csv(newsub4, "tst4.csv", row.names = FALSE, quote = FALSE)
